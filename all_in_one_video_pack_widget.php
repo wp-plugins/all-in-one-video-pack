@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: All in One Video Pack Sidebar Widget
-Plugin URI: http://kaltura.org/
+Plugin URI: http://www.kaltura.org/
 Description: A sidebar widget that allows you to display the most recent posted videos and comments in your blog.  
 Version: 99.99(DEV)
 Author: Kaltura
@@ -22,6 +22,10 @@ class AllInOneVideoWidget
 		if (defined("KALTURA_PLUGIN_FILE")) 
 		{
 			add_action("widgets_init", array(&$this, "registerWidget"));
+			add_action("widgets_init", array(&$this, "registerWidget"));
+			add_action("widgets_init", array(&$this, "registerWidget"));
+			add_action("wp_ajax_nopriv_kaltura_get_video_comments", array(&$this, "getVideoComments"));
+			add_action("wp_ajax_nopriv_kaltura_get_video_posts", array(&$this, "getVideoPosts"));
 		}
 		else
 		{
@@ -63,6 +67,127 @@ class AllInOneVideoWidget
         echo '</script>' . "\n";
         
         echo $after_widget;
+	}
+	
+	function getVideoComments()
+	{
+		$page_size = 5;
+	
+		$page = (integer)(@$_GET["page"]);
+		if ($page < 1)
+			$page = 1;
+			
+		$widgets = KalturaWPModel::getLastPublishedCommentWidgets($page, $page_size);
+		$total_count = KalturaWPModel::getLastPublishedCommentWidgetsCount();
+	
+		if ($page * $page_size >= $total_count)
+			$last_page = true;
+			
+		if ($page == 1)
+			$first_page = true;
+			
+		echo '<div id="kaltura-video-comments">';
+		if ($widgets) 
+		{
+			echo '<ul id="kaltura-items">';
+			foreach($widgets as $widget)
+			{
+				$post_id = $widget["post_id"];
+				$comment_id = $widget["comment_id"];
+				$post = &get_post($post_id);
+				$comment = &get_comment($comment_id);
+				echo '<li>';
+				echo '<div class="thumb">';
+				echo '<a href="'.get_permalink($post_id).'#comment-'.$comment_id.'">';
+				echo '<img src="'.KalturaHelpers::getThumbnailUrl($widget["id"], $widget["entry_id"], 120, 90, null).'" width="120" height="90" />';
+				echo '</a>';
+				echo '</div>';
+				echo 'Reply to <a href="'.get_permalink($post_id).'">'.$post->post_title.'</a><br />';
+				echo $comment->comment_author . ", " . mysql2date("M j", $comment->comment_date);
+				echo '</li>';
+			}
+			echo '</ul>';
+			
+			echo '<ul class="kaltura-sidebar-pager">';
+			echo '	<li>';
+			if (!$first_page)
+				echo '<a onclick="Kaltura.switchSidebarTab(this, \'comments\','.($page - 1).');">Newer</a>';
+			else
+				echo '&nbsp;';
+			echo '	</li>';
+			echo '	<li>';
+			if (!$last_page)
+				echo '<a onclick="Kaltura.switchSidebarTab(this, \'comments\','.($page + 1).');">Older</a>';
+			else
+				echo '&nbsp;';
+			echo '	</li>';
+			echo '</ul>';
+		}
+		else
+		{
+			echo 'No video comments yet';
+		}
+		echo '</div>';
+	}
+	
+	function getVideoPosts() 
+	{
+		$page_size = 5;
+	
+		$page = (integer)(@$_GET["page"]);
+		if ($page < 1)
+			$page = 1;
+			
+		$widgets = KalturaWPModel::getLastPublishedPostWidgets($page, $page_size);
+		$total_count = KalturaWPModel::getLastPublishedPostWidgetsCount();
+	
+		if ($page * $page_size >= $total_count)
+			$last_page = true;
+			
+		if ($page == 1)
+			$first_page = true;
+		
+		echo '<div id="kaltura-video-posts">';
+		if ($widgets) 
+		{
+			echo '<ul id="kaltura-items">';
+			foreach($widgets as $widget)
+			{
+				$post_id = $widget["post_id"];
+				$post = &get_post($post_id);
+				$user = get_userdata($post->post_author);
+				echo '<li>';
+				echo '<div class="thumb">';
+				echo '<a href="'.get_permalink($post_id).'">';
+				echo '<img src="'.KalturaHelpers::getThumbnailUrl($widget["id"], $widget["entry_id"], 120, 90, null).'" width="120" height="90" />';
+				echo '</a>';
+				echo '</div>';
+				echo '<a href="'.get_permalink($post_id).'">'.$post->post_title.'</a><br />';
+				echo $user->display_name . ", " . mysql2date("M j", $widget["created_at"]);
+				echo '</li>';
+			}
+			echo '</ul>';
+			
+			echo '<ul class="kaltura-sidebar-pager">';
+			echo '	<li>';
+			if (!$first_page)
+				echo '<a onclick="Kaltura.switchSidebarTab(this, \'posts\','.($page - 1).');">Newer</a>';
+			else
+				echo '&nbsp;';
+			echo '	</li>';
+			echo '	<li>';
+			if (!$last_page)
+				echo '<a onclick="Kaltura.switchSidebarTab(this, \'posts\','.($page + 1).');">Older</a>';
+			else
+				echo '&nbsp;';
+			echo '	</li>';
+			echo '</ul>';
+		}
+		else
+		{
+			echo 'No posted videos yet';
+		}
+		echo '</div>';
 	}
 }
 

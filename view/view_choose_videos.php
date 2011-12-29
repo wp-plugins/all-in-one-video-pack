@@ -67,7 +67,7 @@
 		
 		jQuery('.loader').show();
 		jQuery.ajax({
-			url: '<?php echo KalturaHelpers::getPluginUrl(); ?>/ajax_create_mix.php',
+			url: ajaxurl + '?action=kaltura_create_mix',
 			data: { "entryIds[]": entryIds },
 			success: createMixSuccess,
 			error: createMixError
@@ -130,11 +130,11 @@
 			namePostParam: 'entryName',
 			idPostParam: 'entryId',
 			idPrefix: 'entryId_',
-			url: '<?php echo KalturaHelpers::getPluginUrl() ?>/ajax_save_entry_name.php'
+			url: ajaxurl + '?action=kaltura_save_entry_name'
 		});
 
 		jQuery('ul').kalturaEntryStatusChecker({
-			url: '<?php echo KalturaHelpers::getPluginUrl() ?>/ajax_get_entries_status.php',
+			url: ajaxurl + '?action=kaltura_get_entries_status',
 			idPrefix: 'entryId_',
 			idSelector: '.entryId',
 			loader: jQuery('.loader')

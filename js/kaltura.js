@@ -315,9 +315,9 @@ Kaltura = {
 		
 		var pageToLoad = "";
 		if (type == "comments") 
-			pageToLoad = "ajax_get_video_comments.php?nocache="+Math.ceil(10000*Math.random());
+			pageToLoad = "?action=kaltura_get_video_comments?nocache="+Math.ceil(10000*Math.random());
 		else if (type == "posts")
-			pageToLoad = "ajax_get_video_posts.php?nocache="+Math.ceil(10000*Math.random());
+			pageToLoad = "?action=kaltura_get_video_posts?nocache="+Math.ceil(10000*Math.random());
 		else
 			return;
 		
@@ -330,9 +330,9 @@ Kaltura = {
 		
 		jQuery("#kaltura-sidebar-container").empty();
 		jQuery("#kaltura-loader").show();
-		
+		alert('fix ajaxurl variable');
 		jQuery.get(
-				Kaltura_PluginUrl + "/" + pageToLoad,
+				ajaxurl + pageToLoad,
 				null,
 				function (data, status) {
 					jQuery("#kaltura-loader").hide();

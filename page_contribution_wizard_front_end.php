@@ -66,8 +66,9 @@
 	
 	function onContributionWizardClose(modified) {
 		if (entryIds.length > 0) {
+			alert('fix ajaxurl')
 			jQuery.ajax({
-				url: "<?php echo KalturaHelpers::getPluginUrl(); ?>/ajax_append_to_mix.php",
+				url: ajaxurl + "?action=kaltura_append_to_mix",
 				data: { 
 					"mixId": "<?php echo $entryId; ?>",
 					"wid": "<?php echo $widgetId; ?>",

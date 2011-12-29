@@ -103,7 +103,7 @@
 			namePostParam: 'entryName',
 			idPostParam: 'entryId',
 			idPrefix: 'entryId_',
-			url: '<?php echo KalturaHelpers::getPluginUrl() ?>/ajax_save_entry_name.php'
+			url: ajaxurl + '?action=kaltura_save_entry_name'
 		});
 	});
 </script>

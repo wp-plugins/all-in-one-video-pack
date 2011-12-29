@@ -70,6 +70,13 @@ if (KalturaHelpers::compareWPVersion("2.6", "<")) {
 add_filter('mce_external_plugins', 'kaltura_add_mce_plugin'); // add the kaltura mce plugin
 add_filter('tiny_mce_version', 'kaltura_mce_version');
 
+// add admin ajax actions
+add_action('wp_ajax_kaltura_append_to_mix', '_kaltura_append_to_mix');
+add_action('wp_ajax_kaltura_create_mix', '_kaltura_create_mix');
+add_action('wp_ajax_kaltura_get_entries_status', '_kaltura_get_entries_status');
+add_action('wp_ajax_kaltura_get_players', '_kaltura_get_players');
+add_action('wp_ajax_kaltura_save_entry_name', '_kaltura_save_entry_name');
+
 /*
  * Occures when publishing the post, and on every save while the post is published
  * 
@@ -750,5 +757,111 @@ if ( !get_option('kaltura_partner_id') && !isset($_POST['submit']) && !strpos($_
 		";
 	}
 	add_action('admin_notices', 'kaltura_warning');
+}
+
+function _kaltura_append_to_mix() 
+{
+	require_once("lib/kaltura_model.php");
+	$entryIds = isset($_GET["entryIds"]) && is_array($_GET["entryIds"]) ? $_GET["entryIds"] : array();
+	$widgetId = isset($_GET['wid']) ? $_GET['wid'] : "";
+	$mixId = isset($_GET['mixId']) ? $_GET['mixId'] : "";
+	
+	if (!$widgetId && !$mixId)
+		wp_die(__('The interactive video is missing.<br/><br/>'));
+		
+	// check widget permissions at wordpress db
+	$widgetDb = KalturaWPModel::getWidget($widgetId, $mixId);
+	if (!$widgetDb)
+		wp_die(__('The interactive video was not found (Maybe the post was not published yet?).<br/><br/>'));
+	
+	if (!KalturaHelpers::userCanAdd((string)$widgetDb["add_permissions"]))
+		wp_die(__('You do not have sufficient permissions to access this page.<br/><br/>'));
+
+	$kmodel = KalturaModel::getInstance();
+	if (!$mixId) // for backward compatibility
+	{
+		// get the widget from kaltura to find the entry its linked to
+		$widget = $kmodel->getWidget($widgetId);
+		$mixId = $widget->entryId;
+	}
+
+	if (!$mixId || !$widgetDb)
+		wp_die(__('The video was not found.<br/><br/>'));
+		
+	foreach($entryIds as $entryId)
+	{
+		$kmodel->appendMediaToMix($mixId, $entryId);
+	}
+}
+
+function _kaltura_create_mix() 
+{
+	require_once("lib/kaltura_model.php");
+	ob_start();
+	
+	$entryIds = (isset($_GET["entryIds"]) ? $_GET["entryIds"] : array());
+	$name = isset($_GET["name"]) ? $_GET["name"] : "Untitled Mix";
+	
+	$kmodel = KalturaModel::getInstance();
+	
+	$mixEntry = new KalturaMixEntry();
+	$mixEntry->name = $name;
+	$mixEntry->editorType = KalturaEditorType_SIMPLE;
+	$mixEntry = $kmodel->addMixEntry($mixEntry);
+
+	foreach($entryIds as $entryId)
+	{
+		$kmodel->appendMediaToMix($mixEntry->id, $entryId);
+	}
+
+	ob_clean();
+	echo $mixEntry->id; 
+	ob_flush();
+	die;
+}
+
+function _kaltura_get_entries_status()
+{
+	require_once("lib/kaltura_model.php");
+	ob_start();
+	
+	$entryIds = isset($_GET["entryIds"]) && is_array($_GET["entryIds"]) ? $_GET["entryIds"] : array();
+	$kmodel = KalturaModel::getInstance();
+	$entries = $kmodel->getEntriesByIds($entryIds);
+
+	$idsWithStatus = array();
+	foreach($entries as $entry)
+	{
+		$idsWithStatus[$entry->id] = $entry->status;
+	}
+	
+	ob_clean();
+	echo json_encode($idsWithStatus); 
+	ob_flush();
+	die;
+}
+
+function _kaltura_get_players() 
+{
+	require_once("lib/kaltura_model.php");
+	$kmodel = KalturaModel::getInstance();
+	$uiConfs = $kmodel->listPlayersUiConfs();
+	echo json_encode($uiConfs);
+	die();
+}
+
+function _kaltura_save_entry_name() 
+{
+	require_once("lib/kaltura_model.php");
+	$entryId = isset($_POST['entryId']) ? $_POST['entryId'] : null;
+	$entryName = isset($_POST['entryName']) ? $_POST['entryName'] : null;
+	
+	if ($entryId && $entryName)
+	{
+		$kmodel = KalturaModel::getInstance();
+		$baseEntry = new KalturaBaseEntry();
+		$baseEntry->name = $entryName;
+		$kmodel->updateBaseEntry($entryId, $baseEntry);
+	}
 }
 ?>

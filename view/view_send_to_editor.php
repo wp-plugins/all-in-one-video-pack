@@ -220,7 +220,7 @@
 	});
 
 	jQuery().kalturaPlayerSelector({
-		url: '<?php echo KalturaHelpers::getPluginUrl() ?>/ajax_get_players.php',
+		url: ajaxurl + '?action=kaltura_get_players',
 		defaultId: '<?php echo get_option("kaltura_default_player_type"); ?>',
 		swfBaseUrl: '<?php echo KalturaHelpers::getSwfUrlForWidget(); ?>',
 		previewId: 'divKalturaPlayer',
