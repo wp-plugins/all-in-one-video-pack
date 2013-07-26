@@ -3,7 +3,7 @@
 Plugin Name: All in One Video Pack Sidebar Widget
 Plugin URI: http://www.kaltura.org/
 Description: A sidebar widget that allows you to display the most recent posted videos and comments in your blog.  
-Version: 99.99(DEV)
+Version: 2.5
 Author: Kaltura
 Author URI: http://www.kaltura.org/
 */

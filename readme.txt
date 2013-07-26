@@ -4,7 +4,7 @@ Donate link: http://www.kaltura.org/
 Tags: admin, advertising, all in one,  audio, camera,  collaboration, comments, , Encoding, Facebook, flickr, gallery, images, interactive, kaltura, media, media library, participate, photo, picture, player, playlist, plugin,podcast, Post, posts, record, rich-media, richmedia cms, transcoding, video, video advertising, video blog, video comments, video gallery, video responses, video-ads, vlog, webcam, widget, mobile
 Requires at least: 2.5.2
 Tested up to: 3.1
-Stable tag: 2.4.4
+Stable tag: 2.5
 
 Easily add full video capabilities to your blog.
 
