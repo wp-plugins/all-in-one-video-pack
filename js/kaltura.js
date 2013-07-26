@@ -88,7 +88,7 @@ Kaltura = {
 		jQuery("#TB_iframeContent").animate(
 			{
 				width: width + "px",
-				height: height + "px"
+				height: (height+27) + "px"
 			},
 			600,
 			null,
@@ -193,12 +193,12 @@ Kaltura = {
 		jQuery('#'+thumbnailDivId).hide();
 	},
 	
-	openCommentCW: function (pluginUrl) {
+	openCommentCW: function (baseUrl) {
 		var postId = jQuery('[name=comment_post_ID]').val();
 		var author = jQuery('#author').val();
 		var email  = jQuery('#email').val();
 		
-		KalturaModal.openModal('contribution_wizard', pluginUrl + '/page_contribution_wizard_video_comment.php?postid='+postId+'&author='+author+'&email='+email, { width: 680, height: 360 } );
+		KalturaModal.openModal('contribution_wizard', baseUrl + '&kaction=addcomment&postid='+postId+'&author='+author+'&email='+email, { width: 680, height: 360 } );
 		jQuery("#contribution_wizard").addClass("modalContributionWizard");
 	},
 	
@@ -313,26 +313,16 @@ Kaltura = {
 		if  (menu.find("a[class=selected]").get(0) == sender)
 			return; // so we won't load the selected tab
 		
-		var pageToLoad = "";
-		if (type == "comments") 
-			pageToLoad = "ajax_get_video_comments.php?nocache="+Math.ceil(10000*Math.random());
-		else if (type == "posts")
-			pageToLoad = "ajax_get_video_posts.php?nocache="+Math.ceil(10000*Math.random());
-		else
-			return;
-		
-		if (page)
-			pageToLoad = pageToLoad + "&page=" + page;
-			
 		menu.find("a").removeClass("selected"); // unselect all
 		jQuery(sender).addClass("selected"); // select the current
 		
 		
 		jQuery("#kaltura-sidebar-container").empty();
 		jQuery("#kaltura-loader").show();
-		
+
+		var url = KalturaSidebarWidget.ajaxurl + "?action=kaltura_widget_ajax&kaction="+type+"&page="+page;
 		jQuery.get(
-				Kaltura_PluginUrl + "/" + pageToLoad,
+				url,
 				null,
 				function (data, status) {
 					jQuery("#kaltura-loader").hide();
