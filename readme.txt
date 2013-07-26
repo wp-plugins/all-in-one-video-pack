@@ -97,7 +97,6 @@ Support for PHP4 was added on version 1.0
 5. Player with interactive options of adding assets (photo, video, audio) to the video and edit
 6. Create Video Posts
 7. The plugin settings page
-8. Video Editor
 
 == Join the Kaltura Community and Contribute to Open Source Video! ==
 
