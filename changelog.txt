@@ -1,6 +1,6 @@
 Version 2.5.1
 -------------
-* bug fix Jira SUPPS-115
+* fix for PHP error from our plugin that slows down their server 
 
 Version 2.5
 -------------
