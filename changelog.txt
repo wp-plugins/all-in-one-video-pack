@@ -1,3 +1,7 @@
+Version 2.5.1
+-------------
+* bug fix Jira SUPPS-115
+
 Version 2.5
 -------------
 * Full support for WordPress 3.5.2
