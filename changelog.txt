@@ -1,6 +1,6 @@
 Version 2.5.1
 -------------
-* fix for PHP error from our plugin that slows down their server 
+* Fixed PHP notice
 
 Version 2.5
 -------------
